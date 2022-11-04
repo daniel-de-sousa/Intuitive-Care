@@ -1,5 +1,29 @@
+import os
 import scrapy
+import requests
 
+#Função para Baixar os Arquivos
+def download(title, url):
+    #Realizando a Requisição do Servidor - Obtendo os Dados do arquivo
+    requisicao = requests.get(url)
+    
+    #Verificando se Pode Continuar com o Processor de Baixar os Dados do Arquivo
+    if requisicao.status_code == requests.codes.OK:
+        #Combinando as Informações do Nome do Arquivo - Combinado Nome e Extensão
+        nome = (title + '.' + (url.split('.'))[-1])
+
+        #Passando o Endereo que o Arquivo vai Ser Salvo
+        local = 'ANSS\Arquivos'
+
+        #Combinando as Informações de Local com Nome para Passar na Hora de Salvar o Arquivo
+        nome_local = os.path.join(local, nome)
+
+        #Abrindo um Novo Arquivo para Salvar as Informações
+        with open(nome_local, 'wb') as novo_arquivo:
+            novo_arquivo.write(requisicao.content)
+
+    else:
+        requisicao.raise_for_status()
 
 class IntuitiveSpider(scrapy.Spider):
     #Nome da Spider
@@ -18,3 +42,6 @@ class IntuitiveSpider(scrapy.Spider):
 
             #Pegando o Link do Arquivo - Busca o Elemento Âncora do HTML e pega o que estiver no atribúto href
             link = box.css('.callout+ .callout .internal-link').attrib['href']
+
+            #Chamando a Função para Baixar o Arquivo que Foi Identificado
+            download(title, link)

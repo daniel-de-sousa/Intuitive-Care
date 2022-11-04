@@ -1,6 +1,10 @@
 import os
 import scrapy
 import requests
+from zipfile import ZipFile, ZIP_DEFLATED
+
+#Definindo o Endereço de onde os arquivos serão armazenados
+local = 'ANSS\Arquivos'
 
 #Função para Baixar os Arquivos
 def download(title, url):
@@ -12,9 +16,6 @@ def download(title, url):
         #Combinando as Informações do Nome do Arquivo - Combinado Nome e Extensão
         nome = (title + '.' + (url.split('.'))[-1])
 
-        #Passando o Endereo que o Arquivo vai Ser Salvo
-        local = 'ANSS\Arquivos'
-
         #Combinando as Informações de Local com Nome para Passar na Hora de Salvar o Arquivo
         nome_local = os.path.join(local, nome)
 
@@ -24,6 +25,16 @@ def download(title, url):
 
     else:
         requisicao.raise_for_status()
+
+#Função para Compactar os Arquivos
+def compactar():
+    #Pegando a Quantida de Arquivos na Pasta para inteirar sobre eles
+    quantidade = os.listdir(local)
+
+    #Criando o arquivo zip e Adicionando os Arquivos Dentro
+    with ZipFile(local + "/" + 'Arquivos_Compactados.zip', 'w', compression=ZIP_DEFLATED) as compactado:
+        for item in quantidade:
+            compactado.write(local + "/" + item, item)
 
 class IntuitiveSpider(scrapy.Spider):
     #Nome da Spider
@@ -45,3 +56,6 @@ class IntuitiveSpider(scrapy.Spider):
 
             #Chamando a Função para Baixar o Arquivo que Foi Identificado
             download(title, link)
+        
+        #Chamando a Função para Compactar
+        compactar()

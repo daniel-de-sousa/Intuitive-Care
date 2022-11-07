@@ -33,7 +33,7 @@ data_frame_copia['Seg. Ambulatorial'] = data_frame_copia['Seg. Ambulatorial'].ma
 data_frame_final = data_frame_copia.drop_duplicates()
 
 #Criando o arquivo CSV
-data_frame_final.to_csv(file_csv, index=False)
+data_frame_final.to_csv(file_csv, index=False, sep=';')
 
 #Criando o Zip e adicionando dentro dele
 with ZipFile(file_zip + "/" + "Teste_Daniel.zip", "w", compression=ZIP_DEFLATED) as compactado:
